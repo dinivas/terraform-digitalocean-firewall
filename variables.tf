@@ -15,6 +15,6 @@ variable "delete_default_rules" {
 
 
 variable "rules" {
-  type    = "list"
+  type    = list(map(any))
   default = []
 }

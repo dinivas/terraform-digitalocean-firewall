@@ -1,12 +1,9 @@
 module "security_group" {
-  source      = "../../"
-  name        = "example"
-  description = "Instance Rules Project"
-  rules       = "${var.instance-rules-sg}"
-}
-
-variable "instance-rules-sg" {
-  default = [
+  source               = "../../"
+  name                 = "example"
+  description          = "Instance Rules Project"
+  delete_default_rules = "false"
+  rules = [
     {
       direction        = "ingress"
       ethertype        = "IPv4"
@@ -22,6 +19,6 @@ variable "instance-rules-sg" {
       port_range_min   = 0
       port_range_max   = 0
       remote_ip_prefix = "0.0.0.0/0"
-    },
+    }
   ]
 }
