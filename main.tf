@@ -1,18 +1,31 @@
-resource "openstack_networking_secgroup_v2" "this" {
-  name                 = "${var.name}"
-  description          = "${var.description}"
-  delete_default_rules = "${var.delete_default_rules}"
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
 }
 
-resource "openstack_networking_secgroup_rule_v2" "this" {
-  count = "${length(var.rules)}"
+resource "digitalocean_firewall" "this" {
+  name = var.name
+  tags = var.tags
 
-  port_range_min    = "${lookup(var.rules[count.index], "port_range_min", 0)}"
-  port_range_max    = "${lookup(var.rules[count.index], "port_range_max", 0)}"
-  protocol          = "${lookup(var.rules[count.index], "protocol", "")}"
-  direction         = "${lookup(var.rules[count.index], "direction")}"
-  ethertype         = "${lookup(var.rules[count.index], "ethertype")}"
-  remote_ip_prefix  = "${lookup(var.rules[count.index], "remote_ip_prefix", "")}"
-  security_group_id = "${openstack_networking_secgroup_v2.this.id}"
-  remote_group_id   = "${lookup(var.rules[count.index], "remote_group_id", "")}"
+  dynamic "inbound_rule" {
+    for_each = var.inbound_rules
+    content {
+      protocol         = inbound_rule.value["protocol"]
+      port_range       = inbound_rule.value["port_range"]
+      source_addresses = split(",", inbound_rule.value["source_addresses"])
+    }
+  }
+
+  dynamic "outbound_rule" {
+    for_each = var.outbound_rules
+    content {
+      protocol              = outbound_rule.value["protocol"]
+      port_range            = outbound_rule.value["port_range"]
+      destination_addresses = split(",", outbound_rule.value["destination_addresses"])
+    }
+  }
 }

@@ -1,20 +1,20 @@
 variable "name" {
-  type    = "string"
+  type    = string
   default = "default"
 }
 
-variable "description" {
-  type    = "string"
-  default = "desc"
-}
-
-variable "delete_default_rules" {
-  type = "string"
-  default = "true"
+variable "tags" {
+  type    = list(string)
+  default = []
 }
 
 
-variable "rules" {
+variable "inbound_rules" {
+  type    = list(map(any))
+  default = []
+}
+
+variable "outbound_rules" {
   type    = list(map(any))
   default = []
 }
